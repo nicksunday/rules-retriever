@@ -14,6 +14,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Build FAISS index from rulebooks.")
 
@@ -67,6 +68,7 @@ def main():
     save_index(index, index_file, docs, docs_file)
     logger.info(f"Index saved to {index_file}")
     logger.info(f"Metadata saved to {docs_file}")
+
 
 if __name__ == "__main__":
     main()

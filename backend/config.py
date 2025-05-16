@@ -3,14 +3,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def get_env(name: str, default: str = "") -> str:
     return os.getenv(name, default).strip()
+
 
 def get_bool(name: str, default: bool = False) -> bool:
     return get_env(name, str(default)).lower() == "true"
 
+
 def get_list(name: str, default: str = "") -> list[str]:
     return [item.strip() for item in get_env(name, default).split(",") if item.strip()]
+
 
 FAISS_INDEX_PATH = get_env("FAISS_INDEX_PATH", "faiss_store/faiss_index.idx")
 METADATA_PATH = get_env("METADATA_PATH", "faiss_store/doc_metadata.pkl")

@@ -26,7 +26,9 @@ def main():
     parser = argparse.ArgumentParser(description="Ask a board game rules question")
 
     parser.add_argument("--question", type=str, help="The question to ask")
-    parser.add_argument("--k", type=int, default=12, help="Number of chunks to retrieve")
+    parser.add_argument(
+        "--k", type=int, default=12, help="Number of chunks to retrieve"
+    )
 
     parser.add_argument(
         "--index_dir",

@@ -37,6 +37,7 @@ docs = None
 embedding_model = None
 llm = None
 
+
 @app.on_event("startup")
 def on_startup():
     global faiss_index, docs, embedding_model, llm
@@ -56,6 +57,7 @@ def on_startup():
 
     if TRACING_ENABLED:
         from langsmith import Client
+
         Client()
         logger.info(f"LangSmith project: {LANGCHAIN_PROJECT}")
 
@@ -65,6 +67,7 @@ def on_startup():
     except Exception as e:
         logger.warning(f"LLM warm-up failed: {e}")
 
+
 @app.post("/ask")
 async def ask_question(payload: QuestionRequest):
     try:
@@ -72,7 +75,9 @@ async def ask_question(payload: QuestionRequest):
         game = extract_game_from_question(payload.question, KNOWN_GAMES)
         logger.info(f"Received question for game: {game}")
 
-        top_docs = get_top_k_chunks(payload.question, docs, faiss_index, payload.k, game, embedding_model)
+        top_docs = get_top_k_chunks(
+            payload.question, docs, faiss_index, payload.k, game, embedding_model
+        )
         answer = generate_answer(payload.question, top_docs, llm)
 
         logger.info(f"Answered in {time.time() - start:.2f}s")

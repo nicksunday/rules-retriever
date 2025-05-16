@@ -28,12 +28,18 @@ def get_top_k_chunks(
     top_docs = [docs[i] for i in indices[0]]
 
     if game:
-        top_docs = [doc for doc in top_docs if game.lower() in doc.metadata.get("game", "").lower()]
+        top_docs = [
+            doc
+            for doc in top_docs
+            if game.lower() in doc.metadata.get("game", "").lower()
+        ]
 
     return top_docs[:k]
 
 
-def generate_answer(question: str, retrieved_docs: List[Document], llm: ChatTogether) -> str:
+def generate_answer(
+    question: str, retrieved_docs: List[Document], llm: ChatTogether
+) -> str:
     context = "\n---\n".join([doc.page_content for doc in retrieved_docs])
     prompt = f"""You are a board game rules expert. Use the context below to answer the question.
 Answer the question as best you can using the context below.

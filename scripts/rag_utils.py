@@ -22,6 +22,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 # ---------------------------
 # 📄 Index I/O
 # ---------------------------
@@ -34,16 +35,19 @@ def load_index_and_docs(output_dir: str = "/app/faiss_store"):
         docs = pickle.load(f)
     return index, docs
 
+
 def save_index(index, index_path: str, docs: List[Document], docs_path: str):
     faiss.write_index(index, index_path)
     with open(docs_path, "wb") as f:
         pickle.dump(docs, f)
+
 
 # ---------------------------
 # 📚 Rulebook Processing
 # ---------------------------
 def smart_split_rulebook(text: str, chunk_size: int, chunk_overlap: int) -> List[str]:
     import re
+
     # Try numbered headings (e.g., 1., 1.2.)
     numbered = re.split(r"\n(?=\d{1,2}(?:\.\d+)*\.?\s+)", text)
     numbered = [s.strip() for s in numbered if s.strip()]
@@ -62,6 +66,7 @@ def smart_split_rulebook(text: str, chunk_size: int, chunk_overlap: int) -> List
     )
     return splitter.split_text(text)
 
+
 def extract_text_with_headings(doc):
     text_parts = []
     for page in doc:
@@ -77,6 +82,7 @@ def extract_text_with_headings(doc):
                     text_parts.append(text)
     return "\n".join(text_parts)
 
+
 def detect_section_type(text: str) -> str:
     section_keywords = {
         "Setup": ["setup", "game setup", "preparation"],
@@ -91,7 +97,10 @@ def detect_section_type(text: str) -> str:
             return label
     return "General"
 
-def load_rulebooks(folder_path: str, chunk_size: int, chunk_overlap: int) -> List[Document]:
+
+def load_rulebooks(
+    folder_path: str, chunk_size: int, chunk_overlap: int
+) -> List[Document]:
     documents = []
     for filename in os.listdir(folder_path):
         if filename.endswith(".pdf"):
@@ -105,19 +114,27 @@ def load_rulebooks(folder_path: str, chunk_size: int, chunk_overlap: int) -> Lis
 
             for i, chunk in enumerate(chunks):
                 section_type = detect_section_type(chunk)
-                logger.debug(f"[{game_name}] Chunk {i} ({section_type}): {chunk[:80].replace(chr(10), ' ')}...")
+                logger.debug(
+                    f"[{game_name}] Chunk {i} ({section_type}): {chunk[:80].replace(chr(10), ' ')}..."
+                )
                 documents.append(
                     Document(
                         page_content=chunk,
-                        metadata={"game": game_name, "chunk_id": i, "section_type": section_type}
+                        metadata={
+                            "game": game_name,
+                            "chunk_id": i,
+                            "section_type": section_type,
+                        },
                     )
                 )
     return documents
+
 
 # ---------------------------
 # 🤖 Embeddings + Search
 # ---------------------------
 EMBEDDING_MODEL_NAME = os.getenv("EMBEDDING_MODEL_NAME", "all-MiniLM-L6-v2")
+
 
 def embed_documents(docs: List[Document], model_name: str):
     model = SentenceTransformer(model_name)
@@ -125,10 +142,12 @@ def embed_documents(docs: List[Document], model_name: str):
     embeddings = model.encode(texts, convert_to_numpy=True)
     return embeddings
 
+
 def build_faiss_index(embeddings) -> faiss.Index:
     index = faiss.IndexFlatL2(embeddings.shape[1])
     index.add(embeddings)
     return index
+
 
 def get_top_k_chunks(
     question: str,
@@ -150,6 +169,7 @@ def get_top_k_chunks(
         ]
     return top_docs[:k]
 
+
 # ---------------------------
 # 🧠 Prompting + LLM
 # ---------------------------
@@ -160,6 +180,7 @@ def extract_game_from_question(question: str) -> str | None:
         if game.lower().strip() in question.lower().strip():
             return game
     return None
+
 
 def build_prompt(question: str, retrieved_docs: list[Document]) -> str:
     context = "\n---\n".join([doc.page_content for doc in retrieved_docs])
@@ -173,10 +194,12 @@ Context:
 Question: {question}
 Answer:"""
 
+
 # Only used in CLI/backend — pipeline does not need LLM
 llm = ChatTogether(
     model="mistralai/Mixtral-8x7B-Instruct-v0.1", temperature=0.7, max_tokens=512
 )
+
 
 def generate_answer(prompt: str) -> str:
     return llm.invoke(prompt).content
