@@ -1,0 +1,12 @@
+ruff==0.11.10
+python-dotenv==1.0.1
+faiss-cpu==1.8.0
+sentence-transformers==2.5.1
+numpy==1.26.4
+PyMuPDF==1.23.7
+langchain==0.3.25
+langchain-core==0.3.60
+langchain-together==0.3.0
+langsmith==0.1.147
+rich>=13.7.0
+torch>=2.0.0

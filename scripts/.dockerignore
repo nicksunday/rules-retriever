@@ -1,0 +1,16 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Non-source files
+*.log
+*.db
+*.sqlite
+*.profraw
+
+# Local-only directories
+faiss_store/
+rulebooks/
+
+# Optional: ignore .env if not used in Docker context
+.env

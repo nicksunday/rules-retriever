@@ -1,0 +1,15 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Editor files
+.vscode/
+.idea/
+
+# OS + git + logs
+.DS_Store
+.git/
+*.log
+
+# Non-code
+*.profraw

@@ -1,0 +1,76 @@
+services:
+  backend:
+    platform: linux/arm64
+    build:
+      context: ./backend
+    container_name: rag-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./faiss_store:/app/faiss_store
+      - huggingface-cache:/root/.cache/huggingface
+    env_file: .env
+    environment:
+      - TOKENIZERS_PARALLELISM=false
+
+  frontend:
+    platform: linux/arm64
+    build:
+      context: ./frontend
+    container_name: rag-frontend
+    ports:
+      - "8501:8501"
+    env_file: .env
+    depends_on:
+      - backend
+
+  cli:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    container_name: rag-cli
+    profiles:
+      - cli
+    volumes:
+      - ./scripts:/app/scripts
+      - ./faiss_store:/app/faiss_store
+      - ./.env:/app/.env
+      - huggingface-cache:/root/.cache/huggingface
+    env_file: .env
+    entrypoint: ["python", "/app/scripts/query_cli.py"]
+
+  pipeline:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    container_name: rag-pipeline
+    profiles:
+      - pipeline
+    volumes:
+      - ./scripts:/app/scripts
+      - ./rulebooks:/app/rulebooks
+      - ./faiss_store:/app/faiss_store
+      - ./.env:/app/.env
+      - huggingface-cache:/root/.cache/huggingface
+    env_file: .env
+    entrypoint: ["python", "/app/scripts/rag_pipeline.py"]
+
+  dev:
+    platform: linux/arm64
+    build:
+      context: .
+      dockerfile: scripts/Dockerfile
+    container_name: rag-dev
+    profiles:
+      - dev
+    volumes:
+      - ./scripts:/app/scripts
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+      - huggingface-cache:/root/.cache/huggingface
+    entrypoint: ["bash", "-c"]
+
+volumes:
+  huggingface-cache:

@@ -1,0 +1,41 @@
+# Bytecode / compiled
+__pycache__/
+*.py[cod]
+
+# Virtualenvs
+.venv/
+env/
+venv/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Version control
+.git/
+.gitignore
+
+# Output & logs
+*.log
+*.sqlite
+*.db
+*.profraw
+
+# Local data folders
+faiss_store/
+rulebooks/
+
+# Docker config & secrets (excluded from context, not ignored by Compose)
+.env
+.env.example
+docker-compose.yml
+justfile
+
+# Build artifacts
+default.profraw

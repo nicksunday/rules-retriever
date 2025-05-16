@@ -46,3 +46,6 @@ docker-compose.override.yml
 
 # Generated embeddings + index
 faiss_store/
+
+# Don't store rulebooks in github
+rulebooks/

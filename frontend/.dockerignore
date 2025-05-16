@@ -1,0 +1,12 @@
+# Bytecode
+__pycache__/
+*.py[cod]
+
+# Editor files
+.vscode/
+.idea/
+.DS_Store
+
+# Logs or build junk
+*.log
+*.profraw
